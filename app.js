@@ -11,6 +11,8 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+require('dotenv').config()
+
 var app = express();
 
 // view engine setup
@@ -33,18 +35,39 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // set up passport
+
 passport.use('oidc', new Strategy({
   issuer: 'https://bugcrowd-oie-7dee-1.oktapreview.com/oauth2/default',
   authorizationURL: 'https://bugcrowd-oie-7dee-1.oktapreview.com/oauth2/default/v1/authorize',
   tokenURL: 'https://bugcrowd-oie-7dee-1.oktapreview.com/oauth2/default/v1/token',
   userInfoURL: 'https://bugcrowd-oie-7dee-1.oktapreview.com/oauth2/default/v1/userinfo',
-  clientID: '0oa692p9sr2cRr5YJ0x7',
-  clientSecret: 'wsixOTyFYIl8xAJQ3Pd8qsOU8O5VRLkOili8BA7Hjj1EOO0pHbg1nFxgF6eAsZ0f',
+  clientID: process.env.OKTA_CLIENT_ID,
+  clientSecret: process.env.OKTA_SECRET,
   callbackURL: 'http://localhost:3000/authorization-code/callback',
   scope: 'openid profile'
 }, (issuer, profile, done) => {
   return done(null, profile);
 }));
+
+
+
+/*
+passport.use('oidc', new Strategy({
+  issuer: 'https://kpmgtestbiopass.au.truuth.id',
+  authorizationURL: 'https://kpmgtestbiopass.au.truuth.id/authorize',
+  tokenURL: 'https://kpmgtestbiopass.au.truuth.id/token',
+  userInfoURL: 'https://kpmgtestbiopass.au.truuth.id/userinfo',
+  clientID: process.env.BIOPASS_CLIENT_ID,
+  clientSecret: process.env.BIOPASS_SECRET,
+  callbackURL: 'https://bugcrowd-oie-7dee-1.oktapreview.com/oauth2/v1/authorize/callback',
+  scope: 'openid profile email'
+}, (issuer, profile, done) => {
+  return done(null, profile);
+}));
+*/
+
+
+
 
 app.use('/signin', passport.authenticate('oidc'));
 
